@@ -20,20 +20,24 @@ type elderlyChanModel struct {
 	Birthdate string
 }
 
+type nameChanModel struct {
+	Name, Gender string
+}
+
 func Generate(cfg config.Config) error {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	femaleNameData, err := ReadCSV(cfg.FemaleNameFile)
+	femaleNameData, err := readCSV(cfg.FemaleNameFile)
 	if err != nil {
 		return err
 	}
 
-	maleNameData, err := ReadCSV(cfg.MaleNameFile)
+	maleNameData, err := readCSV(cfg.MaleNameFile)
 	if err != nil {
 		return err
 	}
 
-	lastnameData, err := ReadCSV(cfg.LastnameFile)
+	lastnameData, err := readCSV(cfg.LastnameFile)
 	if err != nil {
 		return err
 	}
@@ -48,10 +52,6 @@ func Generate(cfg config.Config) error {
 	node, err := snowflake.NewNode(1, 1)
 	if err != nil {
 		return errors.Wrap(err, "failed to create snowflake node")
-	}
-
-	type nameChanModel struct {
-		Name, Gender string
 	}
 
 	var nameChan = make(chan nameChanModel, cfg.TotalPopulation)
@@ -122,7 +122,7 @@ func Generate(cfg config.Config) error {
 	return nil
 }
 
-func ReadCSV(filepath string) ([][]string, error) {
+func readCSV(filepath string) ([][]string, error) {
 	f, err := os.Open(filepath)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to open csv file")
