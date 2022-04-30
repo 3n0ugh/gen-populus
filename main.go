@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/3n0ugh/gen-populus/generator"
 	"github.com/3n0ugh/gen-populus/internal/config"
+	"github.com/3n0ugh/gen-populus/pkg/generator"
 	"log"
 	"os"
 )
