@@ -2,7 +2,6 @@ package csv
 
 import (
 	"encoding/csv"
-	"github.com/pkg/errors"
 	"os"
 	"sync"
 )
@@ -17,14 +16,10 @@ func NewCSVWriter(csvFile *os.File) (*Writer, error) {
 	return &Writer{csvWriter: w, mutex: &sync.Mutex{}}, nil
 }
 
-func (w *Writer) WriteAll(data [][]string) error {
+func (w *Writer) WriteAll(data [][]string) {
 	w.mutex.Lock()
-	err := w.csvWriter.WriteAll(data)
-	if err != nil {
-		err = errors.Wrap(err, "failed to write CSV file")
-	}
+	w.csvWriter.WriteAll(data)
 	w.mutex.Unlock()
-	return err
 }
 
 func (w *Writer) Flush() {
