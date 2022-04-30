@@ -47,8 +47,10 @@ func Generate(population uint64) error {
 
 	wg.Wait()
 	close(nameChan)
+
 	for n := range nameChan {
 		fmt.Println(n)
 	}
+
 	return nil
 }
