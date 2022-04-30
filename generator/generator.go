@@ -26,7 +26,8 @@ func Generate(population uint64) error {
 			name := femaleNames[r.Intn(len(femaleNames))][0]
 			lastname := lastNames[r.Intn(len(lastNames))][0]
 			gender := "female"
-			ch <- fmt.Sprintf("%s\t%s\t%s", name, lastname, gender)
+			age := r.Intn(110) + 1
+			ch <- fmt.Sprintf("%s\t%s\t%s\t%d", name, lastname, gender, age)
 		}
 		wg.Done()
 	}(nameChan)
@@ -38,7 +39,8 @@ func Generate(population uint64) error {
 			name := maleNames[r.Intn(len(femaleNames))][0]
 			lastname := lastNames[r.Intn(len(lastNames))][0]
 			gender := "male"
-			ch <- fmt.Sprintf("%s\t%s\t%s", name, lastname, gender)
+			age := r.Intn(110) + 1
+			ch <- fmt.Sprintf("%s\t%s\t%s\t%d", name, lastname, gender, age)
 		}
 		wg.Done()
 	}(nameChan)
