@@ -15,6 +15,11 @@ import (
 	"time"
 )
 
+type elderlyChanModel struct {
+	Age       int
+	Birthdate string
+}
+
 func Generate(cfg config.Config) error {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
@@ -49,11 +54,6 @@ func Generate(cfg config.Config) error {
 		Name, Gender string
 	}
 
-	type elderlyChanModel struct {
-		Age       int
-		Birthdate string
-	}
-
 	var nameChan = make(chan nameChanModel, cfg.TotalPopulation)
 	var elderlyChan = make(chan elderlyChanModel, cfg.TotalPopulation)
 	var wg sync.WaitGroup
@@ -78,94 +78,13 @@ func Generate(cfg config.Config) error {
 	}(nameChan)
 
 	// Generate child ages
-	go func(ec chan<- elderlyChanModel) {
-		defer wg.Done()
-		r := rand.New(rand.NewSource(time.Now().UnixNano()))
-		for i := uint64(0); i < childCount; i++ {
-			age := r.Intn(15) + 1 // Between 0-16
-			year := time.Now().Year() - age
-			month := r.Intn(11) + 1
-
-			var day int
-			switch month {
-			case 1, 3, 5, 7, 8, 10, 12:
-				day = r.Intn(30) + 1
-			case 2:
-				if year%4 == 0 {
-					day = r.Intn(28) + 1
-				} else {
-					day = r.Intn(27) + 1
-				}
-			default:
-				day = r.Intn(29) + 1
-			}
-
-			ec <- elderlyChanModel{
-				Age:       age,
-				Birthdate: fmt.Sprintf("%d.%d.%d", day, month, year),
-			}
-		}
-	}(elderlyChan)
+	go elderly(elderlyChan, childCount, 1, 15, &wg)
 
 	// Generate teen ages
-	go func(ec chan<- elderlyChanModel) {
-		r := rand.New(rand.NewSource(time.Now().UnixNano()))
-		defer wg.Done()
-		for i := uint64(0); i < teenCount; i++ {
-			age := r.Intn(40) + 16 // Between 16 and 56
-			year := time.Now().Year() - age
-			month := r.Intn(11) + 1
-
-			var day int
-			switch month {
-			case 1, 3, 5, 7, 8, 10, 12:
-				day = r.Intn(30) + 1
-			case 2:
-				if year%4 == 0 {
-					day = r.Intn(28) + 1
-				} else {
-					day = r.Intn(27) + 1
-				}
-			default:
-				day = r.Intn(29) + 1
-			}
-
-			ec <- elderlyChanModel{
-				Age:       age,
-				Birthdate: fmt.Sprintf("%d.%d.%d", day, month, year),
-			}
-		}
-	}(elderlyChan)
+	go elderly(elderlyChan, teenCount, 16, 56, &wg)
 
 	// Generate elder ages
-	go func(ec chan<- elderlyChanModel) {
-		defer wg.Done()
-		r := rand.New(rand.NewSource(time.Now().UnixNano()))
-		for i := uint64(0); i < elderCount; i++ {
-			age := r.Intn(55) + 56 // Between 56 and 111
-			year := time.Now().Year() - age
-			month := r.Intn(11) + 1
-
-			var day int
-			switch month {
-			case 1, 3, 5, 7, 8, 10, 12:
-				day = r.Intn(30) + 1
-			case 2:
-				if year%4 == 0 {
-					day = r.Intn(28) + 1
-				} else {
-					day = r.Intn(27) + 1
-				}
-			default:
-				day = r.Intn(29) + 1
-			}
-
-			ec <- elderlyChanModel{
-				Age:       age,
-				Birthdate: fmt.Sprintf("%d.%d.%d", day, month, year),
-			}
-		}
-	}(elderlyChan)
+	go elderly(elderlyChan, elderCount, 57, 111, &wg)
 
 	var dt = make([][]string, 0)
 	w, err := csvWriter.NewCSVWriter(cfg.OutputFile)
@@ -224,4 +143,33 @@ func ReadCSV(filepath string) ([][]string, error) {
 		return nil, errors.New("csv file is empty")
 	}
 	return dt, nil
+}
+
+func elderly(ec chan<- elderlyChanModel, count uint64, min, max int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	for i := uint64(0); i < count; i++ {
+		age := r.Intn(max-min) + min
+		year := time.Now().Year() - age
+		month := r.Intn(11) + 1
+
+		var day int
+		switch month {
+		case 1, 3, 5, 7, 8, 10, 12:
+			day = r.Intn(30) + 1
+		case 2:
+			if year%4 == 0 {
+				day = r.Intn(28) + 1
+			} else {
+				day = r.Intn(27) + 1
+			}
+		default:
+			day = r.Intn(29) + 1
+		}
+
+		ec <- elderlyChanModel{
+			Age:       age,
+			Birthdate: fmt.Sprintf("%d.%d.%d", day, month, year),
+		}
+	}
 }
