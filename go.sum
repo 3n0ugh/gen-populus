@@ -1,2 +1,4 @@
+github.com/3n0ugh/snowflake v0.0.0-20220420183048-7fa830f6dc1c h1:asiyBmH8Yo426eM8Zmqq0cFrb9bHdzmH2Ku66HdbJtI=
+github.com/3n0ugh/snowflake v0.0.0-20220420183048-7fa830f6dc1c/go.mod h1:bkLeRRO5xhwiYqxo0wYmCmlq03uCyvSwT7juS9QRFPM=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
