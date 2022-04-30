@@ -6,7 +6,7 @@
 <p align="center"> Gen-Populus is a random population data generator.</p>
 
 
-##Data Format
+## Data Format
 ```Bash
    ID        --> Snowflake id generator [github.com/3n0ugh/snowflake]
    Name      --> Randomly chosen from name CSV file 
@@ -17,10 +17,10 @@
    Gender    --> It depends on which file the name is taken from.
 ```
 
-##Requirements
+## Requirements
 - [Go (1.18)](https://go.dev/dl/)
 
-##Usage
+## Usage
 
 - You can define the output file, first name file, last name file, and population size. 
 - However, the ratios such as the number of children-young-old or male-female numbers are defined randomly. 
@@ -44,7 +44,7 @@ if err != nil {
 ```
 - You can check the [main](main.go) file for example.
 
-##Benchmark
+## Benchmark
 - Run benchmark (with 10 million population size):
 ```Bash
 $ go test -bench=. -count=10  ./pkg/generator   
