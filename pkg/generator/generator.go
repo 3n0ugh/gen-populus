@@ -42,6 +42,12 @@ func Generate(cfg config.Config) error {
 		return err
 	}
 
+	var dt = make([][]string, 0)
+	w, err := csvWriter.NewCSVWriter(cfg.OutputFile)
+	if err != nil {
+		return errors.Wrap(err, "Failed to create csv writer")
+	}
+
 	femaleCount := uint64(float64(cfg.TotalPopulation)*cfg.Gender.Female) + 1
 	maleCount := uint64(float64(cfg.TotalPopulation) * cfg.Gender.Male)
 
@@ -49,6 +55,7 @@ func Generate(cfg config.Config) error {
 	elderCount := uint64(float64(cfg.TotalPopulation) * cfg.Elderly.Elder)
 	teenCount := cfg.TotalPopulation - childCount - elderCount
 
+	// Create snowflake id generator node
 	node, err := snowflake.NewNode(1, 1)
 	if err != nil {
 		return errors.Wrap(err, "failed to create snowflake node")
@@ -77,21 +84,16 @@ func Generate(cfg config.Config) error {
 		wg.Done()
 	}(nameChan)
 
-	// Generate child ages
+	// Generate child ages (between 1-15)
 	go elderly(elderlyChan, childCount, 1, 15, &wg)
 
-	// Generate teen ages
+	// Generate teen ages (between 16-56)
 	go elderly(elderlyChan, teenCount, 16, 56, &wg)
 
-	// Generate elder ages
+	// Generate elder ages (between 57-111)
 	go elderly(elderlyChan, elderCount, 57, 111, &wg)
 
-	var dt = make([][]string, 0)
-	w, err := csvWriter.NewCSVWriter(cfg.OutputFile)
-	if err != nil {
-		return errors.Wrap(err, "Failed to create csv writer")
-	}
-
+	// Fan-in all channels
 	for i := uint64(0); i < cfg.TotalPopulation; i++ {
 		id, errId := node.Generate()
 		if errId != nil {
@@ -122,6 +124,7 @@ func Generate(cfg config.Config) error {
 	return nil
 }
 
+// readCSV reads csv given csv files then returns the data
 func readCSV(filepath string) ([][]string, error) {
 	f, err := os.Open(filepath)
 	if err != nil {
@@ -145,6 +148,7 @@ func readCSV(filepath string) ([][]string, error) {
 	return dt, nil
 }
 
+// elderly is function to create age generator goroutine
 func elderly(ec chan<- elderlyChanModel, count uint64, min, max int, wg *sync.WaitGroup) {
 	defer wg.Done()
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
