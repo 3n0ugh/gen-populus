@@ -173,7 +173,7 @@ func elderly(ec chan<- elderlyChanModel, count uint64, min, max int, wg *sync.Wa
 
 		ec <- elderlyChanModel{
 			Age:       age,
-			Birthdate: fmt.Sprintf("%d.%d.%d", day, month, year),
+			Birthdate: fmt.Sprintf("%d-%d-%d", year, month, day),
 		}
 	}
 }
