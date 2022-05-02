@@ -1,6 +1,6 @@
 # gen-populus
 <div align="center">
-  <img src="./images/GSlogo.jpg" alt="drawing" width="180" height="160"/>
+  <img src="./images/GSlogo.jpg" alt="drawing" width="360" height="320"/>
 </div>
 
 <p align="center"> Gen-Populus is a random population data generator.</p>
